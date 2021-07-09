@@ -1,0 +1,32 @@
+{
+    "name": "esatic/suitecrm",
+    "description": "Suitecrm integration package",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "joncasasq",
+            "email": "jonathan.casas@esatic.com"
+        }
+    ],
+    "version": "1.0.0",
+    "minimum-stability": "stable",
+    "require": {
+        "laravel/framework": "^5.8",
+        "php": "^7.4|^8.0",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Esatic\\Suitecrm\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Esatic\\Suitecrm\\Providers\\SuitecrmServiceProvider"
+            ]
+        }
+    }
+}
