@@ -279,6 +279,7 @@ class CrmApi
      * @param array $select_fields
      * @param array $link_name_to_fields_array
      * @param bool $track_view
+     * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
      */
     public function getEntries(string $module, array $ids, array $select_fields = [], array $link_name_to_fields_array = [], bool $track_view = false)
