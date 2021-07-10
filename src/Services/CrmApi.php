@@ -271,4 +271,28 @@ class CrmApi
         return $this->api->sendRequest('get_note_attachment', $get_note_attachment_parameters);
     }
 
+    /**
+     * @see https://docs.suitecrm.com/developer/api/api-v4.1-methods/#_get_entries
+     *
+     * @param string $module
+     * @param array $ids
+     * @param array $select_fields
+     * @param array $link_name_to_fields_array
+     * @param bool $track_view
+     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     */
+    public function getEntries(string $module, array $ids, array $select_fields = [], array $link_name_to_fields_array = [], bool $track_view = false)
+    {
+        $sessId = $this->authApiService->auth();
+        $getEntriesParameters = array(
+            'session' => $sessId,
+            'module_name' => $module,
+            'ids' => $ids,
+            'select_fields' => $select_fields,
+            'link_name_to_fields_array' => $link_name_to_fields_array,
+            'track_view' => $track_view
+        );
+        return $this->api->sendRequest('get_entries', $getEntriesParameters);
+    }
+
 }
