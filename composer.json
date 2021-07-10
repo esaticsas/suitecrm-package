@@ -9,7 +9,7 @@
             "email": "jonathan.casas@esatic.com"
         }
     ],
-    "version": "1.0.1",
+    "version": "1.0.3",
     "minimum-stability": "dev",
     "require": {
         "php": "^7.4|^8.0",
