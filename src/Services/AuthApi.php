@@ -50,6 +50,33 @@ class AuthApi
     }
 
     /**
+     * User for dynamic login
+     * 
+     * @param string $username
+     * @param string $password
+     * @return string
+     * @throws AuthenticationException
+     */
+    public function dynamicAuth(string $username, string $password): Login
+    {
+        $userAuth = array(
+            'user_name' => $username,
+            'password' => md5($password),
+        );
+        $appName = config('config.app_name');
+        $args = array(
+            'user_auth' => $userAuth,
+            'application_name' => $appName,
+            'name_value_list' => array()
+        );
+        $result = $this->api->sendRequest('login', $args);
+        if (!isset($result['id'])) {
+            throw new AuthenticationException($result['description'] ?? 'Unknown error');
+        }
+        return Login::get($result);
+    }
+
+    /**
      * @return Login
      */
     public function getLogin(): Login
