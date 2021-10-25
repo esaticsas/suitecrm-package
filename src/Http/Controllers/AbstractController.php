@@ -74,7 +74,14 @@ abstract class AbstractController extends BaseController
         $orderBy = $request->input('order_by', 'date_entered');
         $offset = $request->input('offset', 0);
         $limit = $request->input('limit', 20);
-        $relatedModuleLinkName = explode(',', $request->input('related_module_link_name'));
+        $items = explode(',', $request->input('related_module_link_name'));
+        $relatedModuleLinkName = [];
+        foreach ($items as $item) {
+            $relatedModuleLinkName[] = [
+                'name' => $item,
+                'value' => explode(',', $request->input($item))
+            ];
+        }
         $deleted = $request->input('deleted', 0);
         $favorites = $request->input('favorites', false);
         event(new BeforeGetRelationships($module, $moduleId, $linkFieldName, $relatedFields, $relatedModuleQuery, $orderBy, $offset, $limit, $relatedModuleLinkName, $deleted, $favorites));
