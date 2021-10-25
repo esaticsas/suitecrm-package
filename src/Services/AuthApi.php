@@ -42,7 +42,7 @@ class AuthApi
             'name_value_list' => array()
         );
         $result = $this->api->sendRequest('login', $args);
-        if (!isset($result['id'])) {
+        if (!isset($result['id']) || empty($result['id'])) {
             throw new AuthenticationException($result['description'] ?? 'Unknown error');
         }
         self::$login = Login::get($result);
@@ -57,13 +57,12 @@ class AuthApi
      * @return string
      * @throws AuthenticationException
      */
-    public function dynamicAuth(string $username, string $password): Login
+    public function dynamicAuth(string $username, string $password, string $appName): Login
     {
         $userAuth = array(
             'user_name' => $username,
             'password' => md5($password),
         );
-        $appName = config('config.app_name');
         $args = array(
             'user_auth' => $userAuth,
             'application_name' => $appName,

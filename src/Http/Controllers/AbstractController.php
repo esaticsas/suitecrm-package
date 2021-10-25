@@ -3,6 +3,22 @@
 namespace Esatic\Suitecrm\Http\Controllers;
 
 use Esatic\Suitecrm\Contracts\ApiCrmInterface;
+use Esatic\Suitecrm\Events\AfterGetAvailableModules;
+use Esatic\Suitecrm\Events\AfterGetEntries;
+use Esatic\Suitecrm\Events\AfterGetEntry;
+use Esatic\Suitecrm\Events\AfterGetEntryList;
+use Esatic\Suitecrm\Events\AfterGetModuleFields;
+use Esatic\Suitecrm\Events\AfterGetRelationships;
+use Esatic\Suitecrm\Events\AfterSetEntry;
+use Esatic\Suitecrm\Events\AfterSetRelationship;
+use Esatic\Suitecrm\Events\BeforeGetAvailableModules;
+use Esatic\Suitecrm\Events\BeforeGetEntries;
+use Esatic\Suitecrm\Events\BeforeGetEntry;
+use Esatic\Suitecrm\Events\BeforeGetEntryList;
+use Esatic\Suitecrm\Events\BeforeGetModuleFields;
+use Esatic\Suitecrm\Events\BeforeGetRelationships;
+use Esatic\Suitecrm\Events\BeforeSetEntry;
+use Esatic\Suitecrm\Events\BeforeSetRelationship;
 use Esatic\Suitecrm\Services\ApiCrm;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,17 +45,18 @@ abstract class AbstractController extends BaseController
      */
     public function getEntryList(string $module, Request $request): JsonResponse
     {
-        return response()->json($this->crmApi->getEntryList(
-            $module,
-            !is_null($request->input('query')) ? $request->input('query') : '',
-            $request->input('order_by', 'date_entered'),
-            $request->input('offset', 0),
-            explode(',', $request->input('fields')),
-            $request->input('link_field_name', array()),
-            $request->input('limit', 20),
-            $request->input('deleted', 0),
-            $request->input('favorite', false)
-        ));
+        $query = !is_null($request->input('query')) ? $request->input('query') : '';
+        $orderBy = $request->input('order_by', 'date_entered');
+        $offset = $request->input('offset', 0);
+        $selectFields = explode(',', $request->input('fields'));
+        $linkNameFields = $request->input('link_field_name', array());
+        $maxResults = $request->input('limit', 20);
+        $deleted = $request->input('deleted', 0);
+        $favorites = $request->input('favorite', false);
+        event(new BeforeGetEntryList($module, $query, $orderBy, $offset, $selectFields, $linkNameFields, $maxResults, $deleted, $favorites));
+        $result = $this->crmApi->getEntryList($module, $query, $orderBy, $offset, $selectFields, $linkNameFields, $maxResults, $deleted, $favorites);
+        event(new AfterGetEntryList($module, $result));
+        return response()->json($result);
     }
 
     /**
@@ -52,18 +69,18 @@ abstract class AbstractController extends BaseController
      */
     public function getRelationships(string $module, string $moduleId, string $linkFieldName, Request $request): JsonResponse
     {
-        return response()->json($this->crmApi->getRelationships(
-            $module,
-            $moduleId,
-            $linkFieldName,
-            explode(',', $request->input('related_fields')),
-            !is_null($request->input('query')) ? $request->input('query') : '',
-            $request->input('order_by', 'date_entered'),
-            $request->input('offset', 0),
-            $request->input('limit', 20),
-            array(),
-            $request->input('deleted', 0)
-        ));
+        $relatedFields = explode(',', $request->input('related_fields'));
+        $relatedModuleQuery = !is_null($request->input('query')) ? $request->input('query') : '';
+        $orderBy = $request->input('order_by', 'date_entered');
+        $offset = $request->input('offset', 0);
+        $limit = $request->input('limit', 20);
+        $relatedModuleLinkName = explode(',', $request->input('related_module_link_name'));
+        $deleted = $request->input('deleted', 0);
+        $favorites = $request->input('favorites', false);
+        event(new BeforeGetRelationships($module, $moduleId, $linkFieldName, $relatedFields, $relatedModuleQuery, $orderBy, $offset, $limit, $relatedModuleLinkName, $deleted, $favorites));
+        $result = $this->crmApi->getRelationships($module, $moduleId, $linkFieldName, $relatedFields, $relatedModuleQuery, $orderBy, $offset, $limit, $relatedModuleLinkName, $deleted, $favorites);
+        event(new AfterGetRelationships($module, $result));
+        return response()->json($result);
     }
 
     /**
@@ -74,7 +91,10 @@ abstract class AbstractController extends BaseController
      */
     public function getEntry(string $module, string $id): JsonResponse
     {
-        return response()->json($this->crmApi->getEntry($id, $module));
+        event(new BeforeGetEntry($module, $id));
+        $result = $this->crmApi->getEntry($id, $module);
+        event(new AfterGetEntry($module, $result));
+        return response()->json($result);
     }
 
     /**
@@ -83,7 +103,10 @@ abstract class AbstractController extends BaseController
      */
     public function getAvailableModules(): JsonResponse
     {
-        return response()->json($this->crmApi->getAvailableModules());
+        event(new BeforeGetAvailableModules());
+        $result = $this->crmApi->getAvailableModules();
+        event(new AfterGetAvailableModules($result));
+        return response()->json($result);
     }
 
     /**
@@ -93,7 +116,10 @@ abstract class AbstractController extends BaseController
      */
     public function getModuleFields(string $module): JsonResponse
     {
-        return response()->json($this->crmApi->getModuleFields($module));
+        event(new BeforeGetModuleFields($module));
+        $result = $this->crmApi->getModuleFields($module);
+        event(new AfterGetModuleFields($module, $result));
+        return response()->json($result);
     }
 
     /**
@@ -104,7 +130,11 @@ abstract class AbstractController extends BaseController
      */
     public function setEntry(string $module, Request $request): JsonResponse
     {
-        return response()->json($this->crmApi->setEntry($module, $request->all()));
+        $data = $request->all();
+        event(new BeforeSetEntry($module, $data));
+        $result = $this->crmApi->setEntry($module, $data);
+        event(new AfterSetEntry($module, $result));
+        return response()->json($result);
     }
 
 
@@ -118,25 +148,28 @@ abstract class AbstractController extends BaseController
      */
     public function setRelationship(string $module, string $id, string $linkFieldName, Request $request): JsonResponse
     {
-        return response()->json($this->crmApi->setRelationship(
-            $module,
-            $id,
-            $linkFieldName,
-            $request->input('ids')
-        ));
+        $ids = $request->input('ids');
+        event(new BeforeSetRelationship($module, $id, $linkFieldName, $ids));
+        $result = $this->crmApi->setRelationship($module, $id, $linkFieldName, $ids);
+        event(new AfterSetRelationship($module, $result));
+        return response()->json($result);
     }
 
     /**
      * @param string $module
+     * @param Request $request
      * @return JsonResponse
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
      */
     public function getEntries(string $module, Request $request): JsonResponse
     {
-        return response()->json($this->crmApi->getEntries(
-            $module,
-            explode(',', $request->input('ids')),
-            explode(',', $request->input('fields'))
-        ));
+        $ids = explode(',', $request->input('ids'));
+        $fields = explode(',', $request->input('fields'));
+        $link_name_to_fields_array = explode(',', $request->input('link_name_to_fields_array'));
+        $track_view = $request->input('track_view', false);
+        event(new BeforeGetEntries($module, $ids, $fields, $link_name_to_fields_array, $track_view));
+        $result = $this->crmApi->getEntries($module, $ids, $fields, $link_name_to_fields_array, $track_view);
+        event(new AfterGetEntries($module, $result));
+        return response()->json($result);
     }
 }
