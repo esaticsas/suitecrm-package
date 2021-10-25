@@ -51,7 +51,7 @@ class AuthApi
 
     /**
      * User for dynamic login
-     * 
+     *
      * @param string $username
      * @param string $password
      * @return string
@@ -78,6 +78,7 @@ class AuthApi
 
     /**
      * @return Login
+     * @throws AuthenticationException
      */
     public function getLogin(): Login
     {

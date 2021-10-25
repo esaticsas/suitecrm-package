@@ -21,6 +21,10 @@ class Api
         curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
         $result = curl_exec($curl);
         curl_close($curl);
-        return json_decode($result, 1);
+        try {
+            return json_decode($result, true);
+        } catch (\Exception $ex) {
+            dd($ex);
+        }
     }
 }

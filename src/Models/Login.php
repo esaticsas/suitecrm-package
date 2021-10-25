@@ -5,7 +5,7 @@ namespace Esatic\Suitecrm\Models;
 
 
 use Esatic\Suitecrm\Facades\Suitecrm;
-use Esatic\Suitecrm\Services\CrmApi;
+use Esatic\Suitecrm\Services\ApiCrm;
 
 class Login
 {
