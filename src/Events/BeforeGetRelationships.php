@@ -133,5 +133,93 @@ class BeforeGetRelationships extends BaseEvent
         return $this->linkFieldName;
     }
 
+    /**
+     * @param array $relatedFields
+     */
+    public function setRelatedFields(array $relatedFields): void
+    {
+        $this->relatedFields = $relatedFields;
+    }
+
+    /**
+     * @param string $relatedModuleQuery
+     */
+    public function setRelatedModuleQuery(string $relatedModuleQuery): void
+    {
+        $this->relatedModuleQuery = $relatedModuleQuery;
+    }
+
+    /**
+     * @param string $orderBy
+     */
+    public function setOrderBy(string $orderBy): void
+    {
+        $this->orderBy = $orderBy;
+    }
+
+    /**
+     * @param int $offset
+     */
+    public function setOffset(int $offset): void
+    {
+        $this->offset = $offset;
+    }
+
+    /**
+     * @param int $limit
+     */
+    public function setLimit(int $limit): void
+    {
+        $this->limit = $limit;
+    }
+
+    /**
+     * @param array $relatedModuleLinkName
+     */
+    public function setRelatedModuleLinkName(array $relatedModuleLinkName): void
+    {
+        $this->relatedModuleLinkName = $relatedModuleLinkName;
+    }
+
+    /**
+     * @param bool $deleted
+     */
+    public function setDeleted(bool $deleted): void
+    {
+        $this->deleted = $deleted;
+    }
+
+    /**
+     * @param bool $favorites
+     */
+    public function setFavorites(bool $favorites): void
+    {
+        $this->favorites = $favorites;
+    }
+
+    /**
+     * @param string $module
+     */
+    public function setModule(string $module): void
+    {
+        $this->module = $module;
+    }
+
+    /**
+     * @param string $moduleId
+     */
+    public function setModuleId(string $moduleId): void
+    {
+        $this->moduleId = $moduleId;
+    }
+
+    /**
+     * @param string $linkFieldName
+     */
+    public function setLinkFieldName(string $linkFieldName): void
+    {
+        $this->linkFieldName = $linkFieldName;
+    }
+
 
 }

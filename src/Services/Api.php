@@ -5,6 +5,7 @@ namespace Esatic\Suitecrm\Services;
 
 
 use Esatic\Suitecrm\Facades\Suitecrm;
+use Illuminate\Support\Facades\Http;
 
 class Api
 {

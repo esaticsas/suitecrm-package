@@ -11,7 +11,7 @@ class AfterEvent extends BaseEvent
      * @param string $module
      * @param array $result
      */
-    public function __construct(string $module, array $result)
+    public function __construct(string $module, array &$result)
     {
         $this->module = $module;
         $this->result = $result;
@@ -31,6 +31,22 @@ class AfterEvent extends BaseEvent
     public function getResult(): array
     {
         return $this->result;
+    }
+
+    /**
+     * @param string $module
+     */
+    public function setModule(string $module): void
+    {
+        $this->module = $module;
+    }
+
+    /**
+     * @param array $result
+     */
+    public function setResult(array $result): void
+    {
+        $this->result = $result;
     }
 
 

@@ -2,7 +2,7 @@
 
 namespace Esatic\Suitecrm\Events;
 
-class AfterGetEntry extends AfterEvent
+class AfterSetEntries extends AfterEvent
 {
 
 }

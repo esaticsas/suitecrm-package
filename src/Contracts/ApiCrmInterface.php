@@ -83,6 +83,17 @@ interface ApiCrmInterface
 
 
     /**
+     * @see https://docs.suitecrm.com/developer/api/api-v4.1-methods/#_set_entries
+     *
+     * @param string $module The name of the module from which to save records.
+     * @param array $nameValueList
+     * @return mixed
+     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     */
+    public function setEntries(string $module, array $nameValueList): array;
+
+
+    /**
      * @see https://docs.suitecrm.com/developer/api/api-v4.1-methods/#_set_relationship
      *
      * @param string $module The name of the module.

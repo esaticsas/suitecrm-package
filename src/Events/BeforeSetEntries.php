@@ -2,12 +2,15 @@
 
 namespace Esatic\Suitecrm\Events;
 
-class BeforeSetEntry extends BaseEvent
+class BeforeSetEntries extends BaseEvent
 {
-
     private string $module;
     private array $nameValueList;
 
+    /**
+     * @param string $module
+     * @param array $nameValueList
+     */
     public function __construct(string $module, array $nameValueList)
     {
         $this->module = $module;

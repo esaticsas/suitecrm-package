@@ -215,6 +215,28 @@ class ApiCrm implements ApiCrmInterface
     }
 
     /**
+     * @see https://docs.suitecrm.com/developer/api/api-v4.1-methods/#_set_entries
+     *
+     * @param string $module The name of the module from which to save records.
+     * @param array $nameValueList
+     * @return mixed
+     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     */
+    public function setEntries(string $module, array $nameValueList): array
+    {
+        $sessId = $this->authApiService->auth();
+        $set_entry_parameters = array(
+            //session id
+            'session' => $sessId,
+            //The name of the module from which to retrieve records.
+            'module_name' => $module,
+            //Record attributes
+            'name_value_list' => $nameValueList,
+        );
+        return $this->api->sendRequest('set_entries', $set_entry_parameters);
+    }
+
+    /**
      * @see https://docs.suitecrm.com/developer/api/api-v4.1-methods/#_set_relationship
      *
      * @param string $module The name of the module.
