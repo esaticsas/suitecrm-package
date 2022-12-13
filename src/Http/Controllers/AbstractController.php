@@ -21,10 +21,12 @@ use Esatic\Suitecrm\Events\BeforeGetRelationships;
 use Esatic\Suitecrm\Events\BeforeSetEntries;
 use Esatic\Suitecrm\Events\BeforeSetEntry;
 use Esatic\Suitecrm\Events\BeforeSetRelationship;
+use Esatic\Suitecrm\Exceptions\AuthenticationException;
+use Esatic\Suitecrm\Exceptions\CrmException;
+use Esatic\Suitecrm\Http\Requests\ApiSuitecrmRequest;
 use Esatic\Suitecrm\Services\ApiCrm;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 abstract class AbstractController extends BaseController
 {
@@ -44,7 +46,7 @@ abstract class AbstractController extends BaseController
      * @param string $module
      * @param Request $request
      * @return JsonResponse
-     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws AuthenticationException
      */
     public function getEntryList(string $module, Request $request): JsonResponse
     {
@@ -68,7 +70,7 @@ abstract class AbstractController extends BaseController
      * @param string $linkFieldName
      * @param Request $request
      * @return JsonResponse
-     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws AuthenticationException
      */
     public function getRelationships(string $module, string $moduleId, string $linkFieldName, Request $request): JsonResponse
     {
@@ -111,7 +113,7 @@ abstract class AbstractController extends BaseController
      * @param string $module
      * @param string $id
      * @return JsonResponse
-     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws AuthenticationException
      */
     public function getEntry(string $module, string $id): JsonResponse
     {
@@ -124,7 +126,7 @@ abstract class AbstractController extends BaseController
 
     /**
      * @return JsonResponse
-     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws AuthenticationException
      */
     public function getAvailableModules(): JsonResponse
     {
@@ -137,7 +139,7 @@ abstract class AbstractController extends BaseController
     /**
      * @param string $module
      * @return JsonResponse
-     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws AuthenticationException
      */
     public function getModuleFields(string $module): JsonResponse
     {
@@ -151,7 +153,7 @@ abstract class AbstractController extends BaseController
      * @param string $module
      * @param Request $request
      * @return JsonResponse
-     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws AuthenticationException
      */
     public function setEntry(string $module, Request $request): JsonResponse
     {
@@ -164,7 +166,13 @@ abstract class AbstractController extends BaseController
         return response()->json($after->getResult());
     }
 
-    public function setEntries(string $module, Request $request)
+    /**
+     * @param string $module
+     * @param Request $request
+     * @return JsonResponse
+     * @throws AuthenticationException
+     */
+    public function setEntries(string $module, Request $request): JsonResponse
     {
         $data = $request->all();
         $finalData = array();
@@ -185,7 +193,7 @@ abstract class AbstractController extends BaseController
      * @param string $linkFieldName
      * @param Request $request
      * @return JsonResponse
-     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws AuthenticationException
      */
     public function setRelationship(string $module, string $id, string $linkFieldName, Request $request): JsonResponse
     {
@@ -202,7 +210,7 @@ abstract class AbstractController extends BaseController
      * @param string $module
      * @param Request $request
      * @return JsonResponse
-     * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws AuthenticationException
      */
     public function getEntries(string $module, Request $request): JsonResponse
     {
@@ -216,5 +224,19 @@ abstract class AbstractController extends BaseController
         $after = new AfterGetEntries($module, $result);
         event($after);
         return response()->json($after->getResult());
+    }
+
+    /**
+     * Handle the incoming request.
+     *
+     * @param ApiSuitecrmRequest $request
+     * @return JsonResponse
+     * @throws AuthenticationException
+     * @throws CrmException
+     */
+    public function genericRequest(ApiSuitecrmRequest $request): JsonResponse
+    {
+        $response = $this->crmApi->genericRequest($request->input('method'), $request->input('rest_data'));
+        return response()->json($response);
     }
 }

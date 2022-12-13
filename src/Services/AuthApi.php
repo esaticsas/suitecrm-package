@@ -5,6 +5,7 @@ namespace Esatic\Suitecrm\Services;
 
 
 use Esatic\Suitecrm\Exceptions\AuthenticationException;
+use Esatic\Suitecrm\Exceptions\CrmException;
 use Esatic\Suitecrm\Models\Login;
 
 class AuthApi
@@ -27,7 +28,7 @@ class AuthApi
 
     /**
      * @return string
-     * @throws AuthenticationException
+     * @throws AuthenticationException|CrmException
      */
     public function auth(): string
     {
@@ -42,7 +43,7 @@ class AuthApi
             'name_value_list' => array()
         );
         $result = $this->api->sendRequest('login', $args);
-        if (!isset($result['id']) || empty($result['id'])) {
+        if (empty($result['id'])) {
             throw new AuthenticationException($result['description'] ?? 'Unknown error');
         }
         self::$login = Login::get($result);
@@ -54,8 +55,10 @@ class AuthApi
      *
      * @param string $username
      * @param string $password
-     * @return string
+     * @param string $appName
+     * @return Login
      * @throws AuthenticationException
+     * @throws CrmException
      */
     public function dynamicAuth(string $username, string $password, string $appName): Login
     {
@@ -77,7 +80,7 @@ class AuthApi
 
     /**
      * @return Login
-     * @throws AuthenticationException
+     * @throws AuthenticationException|CrmException
      */
     public function getLogin(): Login
     {

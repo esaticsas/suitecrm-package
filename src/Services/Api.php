@@ -4,11 +4,16 @@
 namespace Esatic\Suitecrm\Services;
 
 
-use Esatic\Suitecrm\Facades\Suitecrm;
-use Illuminate\Support\Facades\Http;
+use Esatic\Suitecrm\Exceptions\CrmException;
 
 class Api
 {
+    /**
+     * @param $method
+     * @param $arguments
+     * @return mixed
+     * @throws CrmException
+     */
     public function sendRequest($method, $arguments)
     {
         $curl = curl_init(config('suitecrm.url'));
@@ -25,7 +30,7 @@ class Api
         try {
             return json_decode($result, true);
         } catch (\Exception $ex) {
-            dd($ex);
+            throw new CrmException($ex);
         }
     }
 }

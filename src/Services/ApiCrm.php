@@ -5,6 +5,8 @@ namespace Esatic\Suitecrm\Services;
 
 
 use Esatic\Suitecrm\Contracts\ApiCrmInterface;
+use Esatic\Suitecrm\Exceptions\AuthenticationException;
+use Esatic\Suitecrm\Exceptions\CrmException;
 
 class ApiCrm implements ApiCrmInterface
 {
@@ -344,4 +346,15 @@ class ApiCrm implements ApiCrmInterface
         return $this->api->sendRequest('get_entries', $getEntriesParameters);
     }
 
+    /**
+     * @throws AuthenticationException
+     * @throws CrmException
+     */
+    public function genericRequest(string $method, array $restData): array
+    {
+        $token = $this->authApiService->auth();
+        $data['session'] = $token;
+        $resultData = array_merge($data, $restData);
+        return $this->api->sendRequest($method, $resultData);
+    }
 }

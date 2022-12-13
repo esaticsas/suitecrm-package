@@ -8,6 +8,8 @@ use Esatic\Suitecrm\Http\Controllers\AbstractController;
 use Esatic\Suitecrm\Http\Controllers\CrmController;
 use Esatic\Suitecrm\Http\Middleware\CrmMiddleware;
 use Esatic\Suitecrm\Services\ApiCrm;
+use Esatic\Suitecrm\Services\RelatedItems;
+use Esatic\Suitecrm\Services\RelatedItemsInterface;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -33,7 +35,6 @@ class SuitecrmServiceProvider extends ServiceProvider
     {
         $this->addFacades();
         $this->addRoutes();
-        $this->app->bind(ApiCrmInterface::class, ApiCrm::class);
         /** @var Router $router */
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('crm', CrmMiddleware::class);
@@ -46,7 +47,9 @@ class SuitecrmServiceProvider extends ServiceProvider
      */
     protected function registerConfig()
     {
-        $this->publishes([__DIR__ . '/../config/suitecrm.php' => config_path('suitecrm.php')], 'config');
+        $this->loadMigrationsFrom(__DIR__ . '/../migrations/');
+        $this->publishes([__DIR__ . '/../migrations/' => database_path('migrations')], 'suitecrm');
+        $this->publishes([__DIR__ . '/../config/suitecrm.php' => config_path('suitecrm.php')], 'suitecrm');
         $this->mergeConfigFrom(__DIR__ . '/../config/suitecrm.php', 'suitecrm');
     }
 
@@ -54,6 +57,8 @@ class SuitecrmServiceProvider extends ServiceProvider
     {
         $this->app->bind(Suitecrm::FACADE, ApiCrm::class);
         $this->app->bind(AbstractController::class, CrmController::class);
+        $this->app->bind(ApiCrmInterface::class, ApiCrm::class);
+        $this->app->bind(RelatedItemsInterface::class, RelatedItems::class);
     }
 
     protected function addRoutes()

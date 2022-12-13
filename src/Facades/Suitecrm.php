@@ -7,7 +7,7 @@ namespace Esatic\Suitecrm\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * Reference Class \Esatic\Suitecrm\Facades\ApiCrm
+ * Reference Class \Esatic\Suitecrm\Services\ApiCrm
  * show off @method
  * @method static mixed|array getEntry(string $id, string $module)
  * @method static mixed|array getAvailableModules()
@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static mixed|array setNoteAttachment(string $noteId, string $fileName, string $content, string $relatedModule)
  * @method static mixed|array getNoteAttachment(string $noteId)
  * @method static mixed|array getEntries(string $module, array $ids, array $select_fields = [], array $link_name_to_fields_array = [], bool $track_view = false)
+ * @method static mixed|array genericRequest(string $method, array $restData)
  */
 class Suitecrm extends Facade
 {

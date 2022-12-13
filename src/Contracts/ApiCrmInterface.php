@@ -142,5 +142,12 @@ interface ApiCrmInterface
      */
     public function getEntries(string $module, array $ids, array $select_fields = [], array $link_name_to_fields_array = [], bool $track_view = false): array;
 
-
+    /**
+     * Send any request to api of suitecrm
+     *
+     * @param string $method
+     * @param array $restData
+     * @return mixed
+     */
+    public function genericRequest(string $method, array $restData): array;
 }
