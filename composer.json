@@ -9,11 +9,11 @@
             "email": "jonathan.casas@esatic.com"
         }
     ],
-    "version": "1.1.0",
+    "version": "1.1.1",
     "minimum-stability": "dev",
     "require": {
         "php": "^7.4|^8.0",
-        "laravel/framework": "^7.4",
+        "laravel/framework": "^7.4|^8.0",
         "esatic/user-portal": "^1.0",
         "ext-curl": "*",
         "ext-json": "*"
