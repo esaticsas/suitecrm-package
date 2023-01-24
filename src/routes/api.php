@@ -1,6 +1,7 @@
 <?php
 
 use Esatic\Suitecrm\Http\Controllers\AbstractController;
+use Esatic\Suitecrm\Http\Controllers\FileController;
 use Esatic\Suitecrm\Http\Controllers\ModuleController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +19,7 @@ Route::middleware('crm')->prefix('crm')->group(function () {
     Route::get('relationships/{module}/{relationName}', [ModuleController::class, 'index'])->name('api.crm.relationships.index');
     Route::get('relationships/{module}/view/{id}', [ModuleController::class, 'view'])->name('api.crm.relationships.view');
     Route::get('relationships/{module}/view/{id}/{relationName}', [ModuleController::class, 'relationship'])->name('api.crm.relationships.relation');
+    Route::post('files/{module}', [FileController::class, 'upload'])->name('crm.files.upload');
+    Route::get('files/{module}/{id}', [FileController::class, 'download'])->name('crm.files.download');
+
 });
