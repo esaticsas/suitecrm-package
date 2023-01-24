@@ -32,11 +32,21 @@ class UploadFileService
         $apiUrl = sprintf('%s/index.php?entryPoint=uploadDocument&module=%s', $finalUrl, $module);
         $file = $this->request->file('file');
         $multipartData = [];
-        foreach ($this->request->all() as $key => $item) {
-            $multipartData[] = [
-                'name' => $key,
-                'contents' => $item
-            ];
+        foreach ($_POST as $key => $item) {
+            if (is_array($item)) {
+                foreach ($item as $keyItem => $valueItem) {
+                    $multipartData[] = [
+                        'name' => sprintf('%s[%s]', $key, $keyItem),
+                        'contents' => $valueItem
+                    ];
+                }
+            } else {
+                $multipartData[] = [
+                    'name' => $key,
+                    'contents' => $item
+                ];
+            }
+
         }
         $file = $this->request->file('file');
         $multipartData[] = [
