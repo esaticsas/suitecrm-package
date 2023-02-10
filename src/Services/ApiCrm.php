@@ -7,21 +7,34 @@ namespace Esatic\Suitecrm\Services;
 use Esatic\Suitecrm\Contracts\ApiCrmInterface;
 use Esatic\Suitecrm\Exceptions\AuthenticationException;
 use Esatic\Suitecrm\Exceptions\CrmException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class ApiCrm implements ApiCrmInterface
 {
     private Api $api;
     private AuthApi $authApiService;
+    private CrmUrlFilesService $crmUrlFilesService;
+    private Client $client;
 
     /**
      * ApiCrm constructor.
      * @param Api $api
      * @param AuthApi $authApiService
+     * @param CrmUrlFilesService $crmUrlFilesService
+     * @param Client $client
      */
-    public function __construct(Api $api, AuthApi $authApiService)
+    public function __construct(
+        Api                $api,
+        AuthApi            $authApiService,
+        CrmUrlFilesService $crmUrlFilesService,
+        Client             $client
+    )
     {
         $this->api = $api;
         $this->authApiService = $authApiService;
+        $this->crmUrlFilesService = $crmUrlFilesService;
+        $this->client = $client;
     }
 
     /**
@@ -38,6 +51,7 @@ class ApiCrm implements ApiCrmInterface
      * @param bool $favorites If only records marked as favorites should be returned.
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function getEntryList(
         string $module,
@@ -92,6 +106,7 @@ class ApiCrm implements ApiCrmInterface
      * @param bool $favorites
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function getRelationships(
         string $module,
@@ -133,6 +148,7 @@ class ApiCrm implements ApiCrmInterface
      * @param string $module the name of the module from which to retrieve records
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function getEntry(string $id, string $module): array
     {
@@ -157,6 +173,7 @@ class ApiCrm implements ApiCrmInterface
      *
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function getAvailableModules(): array
     {
@@ -177,6 +194,7 @@ class ApiCrm implements ApiCrmInterface
      * @param string $module The name of the module from which to retrieve fields
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function getModuleFields(string $module): array
     {
@@ -201,6 +219,7 @@ class ApiCrm implements ApiCrmInterface
      * @param array $nameValueList
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function setEntry(string $module, array $nameValueList): array
     {
@@ -223,6 +242,7 @@ class ApiCrm implements ApiCrmInterface
      * @param array $nameValueList
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function setEntries(string $module, array $nameValueList): array
     {
@@ -248,6 +268,7 @@ class ApiCrm implements ApiCrmInterface
      * @param array $nameValueList Sets the value for relationship based fields
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function setRelationship(string $module, string $id, string $linkFieldName, array $relatedIds, array $nameValueList = []): array
     {
@@ -281,6 +302,7 @@ class ApiCrm implements ApiCrmInterface
      * @param string $relatedModule
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function setNoteAttachment(string $noteId, string $fileName, string $content, string $relatedModule): array
     {
@@ -308,6 +330,7 @@ class ApiCrm implements ApiCrmInterface
      * @param string $noteId
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function getNoteAttachment(string $noteId): array
     {
@@ -331,6 +354,7 @@ class ApiCrm implements ApiCrmInterface
      * @param bool $track_view
      * @return mixed
      * @throws \Esatic\Suitecrm\Exceptions\AuthenticationException
+     * @throws CrmException
      */
     public function getEntries(string $module, array $ids, array $select_fields = [], array $link_name_to_fields_array = [], bool $track_view = false): array
     {
@@ -356,5 +380,30 @@ class ApiCrm implements ApiCrmInterface
         $data['session'] = $token;
         $resultData = array_merge($data, $restData);
         return $this->api->sendRequest($method, $resultData);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function getEntryPoint(string $entryPoint, array $params = []): array
+    {
+        $response = $this->client->request('GET', $this->getUrl($entryPoint, $params));
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function postEntryPoint(string $entryPoint, array $params = [], array $body = []): array
+    {
+        $response = $this->client->request('POST', $this->getUrl($entryPoint, $params), $body);
+        return json_decode($response->getBody(), true);
+    }
+
+    protected function getUrl(string $entryPoint, array $params = []): string
+    {
+        $finalUrl = $this->crmUrlFilesService->getUrl();
+        $params = http_build_query($params);
+        return sprintf('%s/index.php?entryPoint=%s&%s', $finalUrl, $entryPoint, $params);
     }
 }

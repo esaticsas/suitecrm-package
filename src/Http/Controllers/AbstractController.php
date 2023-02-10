@@ -24,7 +24,9 @@ use Esatic\Suitecrm\Events\BeforeSetRelationship;
 use Esatic\Suitecrm\Exceptions\AuthenticationException;
 use Esatic\Suitecrm\Exceptions\CrmException;
 use Esatic\Suitecrm\Http\Requests\ApiSuitecrmRequest;
+use Esatic\Suitecrm\Http\Requests\PostEntryPointRequest;
 use Esatic\Suitecrm\Services\ApiCrm;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -237,6 +239,30 @@ abstract class AbstractController extends BaseController
     public function genericRequest(ApiSuitecrmRequest $request): JsonResponse
     {
         $response = $this->crmApi->genericRequest($request->input('method'), $request->input('rest_data'));
+        return response()->json($response);
+    }
+
+    /**
+     * @param string $entryPoint
+     * @param Request $request
+     * @return JsonResponse
+     * @throws GuzzleException
+     */
+    public function getEntryPoint(string $entryPoint, Request $request): JsonResponse
+    {
+        $response = $this->crmApi->getEntryPoint($entryPoint, $request->all());
+        return response()->json($response);
+    }
+
+    /**
+     * @param string $entryPoint
+     * @param PostEntryPointRequest $request
+     * @return JsonResponse
+     * @throws GuzzleException
+     */
+    public function postEntryPoint(string $entryPoint, PostEntryPointRequest $request): JsonResponse
+    {
+        $response = $this->crmApi->postEntryPoint($entryPoint, $request->except(['body']), $request->input('body'));
         return response()->json($response);
     }
 }

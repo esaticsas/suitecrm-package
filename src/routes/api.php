@@ -21,5 +21,6 @@ Route::middleware('crm')->prefix('crm')->group(function () {
     Route::get('relationships/{module}/view/{id}/{relationName}', [ModuleController::class, 'relationship'])->name('api.crm.relationships.relation');
     Route::post('files/{module}', [FileController::class, 'upload'])->name('crm.files.upload');
     Route::get('files/{module}/{id}', [FileController::class, 'download'])->name('crm.files.download');
-
+    Route::get('entry-points/{entryPoint}', [AbstractController::class, 'getEntryPoint'])->name('crm.entry.points.get');
+    Route::post('entry-points/{entryPoint}', [AbstractController::class, 'postEntryPoint'])->name('crm.entry.points.post');
 });

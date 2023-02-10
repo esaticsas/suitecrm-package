@@ -150,4 +150,19 @@ interface ApiCrmInterface
      * @return mixed
      */
     public function genericRequest(string $method, array $restData): array;
+
+    /**
+     * @param string $entryPoint
+     * @param array $params
+     * @return array
+     */
+    public function getEntryPoint(string $entryPoint, array $params = []): array;
+
+    /**
+     * @param string $entryPoint
+     * @param array $params
+     * @param array $body
+     * @return array
+     */
+    public function postEntryPoint(string $entryPoint, array $params = [], array $body = []): array;
 }
