@@ -24,8 +24,7 @@ class PostEntryPointRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'method' => ['required'],
-            'rest_data' => ['required']
+            'body' => ['required'],
         ];
     }
 }
